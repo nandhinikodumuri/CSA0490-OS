@@ -1,0 +1,54 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+int main() {
+    FILE *file;
+    char filename[] = "example.txt";
+    char buffer[100];
+
+    // Creating a file and writing to it
+    file = fopen(filename, "w");
+    if (file == NULL) {
+        printf("Error opening file for writing.\n");
+        exit(1);
+    }
+    fprintf(file, "Hello, this is a test file.\n");
+    fclose(file);
+
+    // Opening the file for reading
+    file = fopen(filename, "r");
+    if (file == NULL) {
+        printf("Error opening file for reading.\n");
+        exit(1);
+    }
+
+    // Reading from the file
+    printf("Contents of %s:\n", filename);
+    while (fgets(buffer, sizeof(buffer), file) != NULL) {
+        printf("%s", buffer);
+    }
+    fclose(file);
+
+    // Appending to the file
+    file = fopen(filename, "a");
+    if (file == NULL) {
+        printf("Error opening file for appending.\n");
+        exit(1);
+    }
+    fprintf(file, "This line is appended to the file.\n");
+    fclose(file);
+
+    // Reading the file again after appending
+    file = fopen(filename, "r");
+    if (file == NULL) {
+        printf("Error opening file for reading.\n");
+        exit(1);
+    }
+    printf("\nContents of %s after appending:\n", filename);
+    while (fgets(buffer, sizeof(buffer), file) != NULL) {
+        printf("%s", buffer);
+    }
+    fclose(file);
+
+    return 0;
+}
