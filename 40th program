@@ -1,0 +1,51 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/stat.h>
+#include <unistd.h>
+
+int main(int argc, char *argv[]) {
+    if(argc != 2) {
+        printf("Usage: %s <filename>\n", argv[0]);
+        exit(EXIT_FAILURE);
+    }
+
+    char *filename = argv[1];
+    struct stat file_stat;
+
+    // Get file status
+    if(stat(filename, &file_stat) == -1) {
+        perror("stat");
+        exit(EXIT_FAILURE);
+    }
+
+    // Check file permissions
+    printf("File permissions for %s:\n", filename);
+    printf("Owner: %c%c%c\n", 
+        (file_stat.st_mode & S_IRUSR) ? 'r' : '-', 
+        (file_stat.st_mode & S_IWUSR) ? 'w' : '-', 
+        (file_stat.st_mode & S_IXUSR) ? 'x' : '-');
+    printf("Group: %c%c%c\n", 
+        (file_stat.st_mode & S_IRGRP) ? 'r' : '-', 
+        (file_stat.st_mode & S_IWGRP) ? 'w' : '-', 
+        (file_stat.st_mode & S_IXGRP) ? 'x' : '-');
+    printf("Others: %c%c%c\n", 
+        (file_stat.st_mode & S_IROTH) ? 'r' : '-', 
+        (file_stat.st_mode & S_IWOTH) ? 'w' : '-', 
+        (file_stat.st_mode & S_IXOTH) ? 'x' : '-');
+
+    // Check current user type
+    uid_t uid = getuid();
+    gid_t gid = getgid();
+    printf("Current User ID: %d\n", uid);
+    printf("Current Group ID: %d\n", gid);
+    if(uid == 0)
+        printf("Current User Type: Superuser (root)\n");
+    else if(uid == file_stat.st_uid)
+        printf("Current User Type: Owner\n");
+    else if(gid == file_stat.st_gid)
+        printf("Current User Type: Group Member\n");
+    else
+        printf("Current User Type: Other\n");
+
+    return 0;
+}
