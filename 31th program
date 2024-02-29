@@ -1,0 +1,44 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include <sys/stat.h>
+#include <dirent.h>
+
+int main() {
+    // fcntl - manipulate file descriptor
+    int fd = open("test.txt", O_RDONLY);
+    if (fd == -1) {
+        perror("open");
+        exit(EXIT_FAILURE);
+    }
+    // Do something with the file descriptor
+    close(fd);
+
+    // seek - set file offset
+    off_t offset = lseek(fd, 0, SEEK_END);
+    printf("File size: %ld bytes\n", offset);
+
+    // stat - get file status
+    struct stat file_stat;
+    if (stat("test.txt", &file_stat) == -1) {
+        perror("stat");
+        exit(EXIT_FAILURE);
+    }
+    printf("File size (stat): %ld bytes\n", file_stat.st_size);
+
+    // opendir, readdir - open and read directory
+    DIR *dir = opendir(".");
+    if (dir == NULL) {
+        perror("opendir");
+        exit(EXIT_FAILURE);
+    }
+
+    struct dirent *entry;
+    while ((entry = readdir(dir)) != NULL) {
+        printf("%s\n", entry->d_name);
+    }
+    closedir(dir);
+
+    return 0;
+}
